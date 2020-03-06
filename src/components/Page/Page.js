@@ -1,12 +1,7 @@
 // @flow
 
 // Vendors
-import React, {
-  type Element,
-  type Component,
-  useEffect,
-  useState
-} from 'react';
+import React, { type Element, useEffect, useState } from 'react';
 import classnames from 'classnames';
 
 // Data
