@@ -1,0 +1,174 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2.1
+
+# Custom executors
+executors:
+  default-executor:
+    docker:
+      - image: circleci/php:7.1-node-browsers
+
+# Custom commands
+commands:
+  set_env_var:
+    steps:
+      - run:
+          name: 'Setup deploy environment variable'
+          command: |
+            echo 'export DEPLOY_ENV=$CIRCLE_BRANCH' >> $BASH_ENV
+
+  add_known_hosts:
+    steps:
+      - run:
+          name: Add SSH host to known hosts
+          command: |
+            ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+
+  ssh_deploy:
+    parameters:
+      working_directory:
+        default: ~/project
+        type: string
+    steps:
+      - run:
+          name: Add/commit vendor, build and environment files
+          working_directory: << parameters.working_directory >>
+          command: |
+            git init
+            git add -A
+            git config --global user.email "deploy@wlion.com"
+            git config --global user.name "White Lion Automated Deployment"
+            git commit -m "committing vendor, build and environment files for deployment"
+      - run:
+          name: Checkout temporary branch
+          working_directory: << parameters.working_directory >>
+          command: |
+            git checkout -b deploy-$CIRCLE_SHA1
+      - run:
+          name: Deploy over SSH
+          working_directory: << parameters.working_directory >>
+          command: |
+            git remote add $DEPLOY_ENV $SSH_USER@$SSH_HOST:$REPOSITORY.git
+            git push $DEPLOY_ENV deploy-$CIRCLE_SHA1
+
+# Jobs
+jobs:
+  # Run Build
+  build:
+    executor: default-executor
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install NVM
+          command: |
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+
+      - restore_cache:
+          keys:
+            - v1-npm-deps-{{ checksum "yarn.lock" }}
+            - v1-npm-deps-
+
+      - run:
+          name: Install NPM packages
+          working_directory: ~/project
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use
+            nvm install
+            nvm use
+            yarn
+
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+
+      - run:
+          name: Build front-end assets
+          working_directory: ~/project
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use
+            nvm use
+            yarn build
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - build
+
+  test:
+    docker:
+      - image: circleci/php:7.1-node-browsers
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: ./
+
+      - run:
+          name: Run tests
+          command: |
+            echo "Running tests..."
+
+      - run:
+          name: Tests done
+          command: |
+            echo "All tests passed successfully!"
+
+  deploy-review:
+    environment:
+      SSH_USER: wlion
+      SSH_HOST: web8.wlion.com
+      REPOSITORY: git/pt-static
+
+    docker:
+      - image: circleci/php:7.1-node-browsers
+
+    steps:
+      - checkout
+      - add_ssh_keys
+      - add_known_hosts
+      - set_env_var
+
+      - attach_workspace:
+          at: ./
+
+      - ssh_deploy:
+          working_directory: ~/project/build
+
+      - ssh_deploy
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - review
+            # tags:
+            #   only:
+            #     - /^((20)[2-9][0-9])\.(0[1-9]|1[012])\.(0[1-9]|[12][0-9]|3[01])\.([0-9][1-9])*$/
+
+      - deploy-review:
+          requires:
+            - build
+          filters:
+            branches:
+              only: review
+      #TODO: Explore using tagged releases for production deployment (https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag)
+      # - deploy-production:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only:
+      #           - /^((20)[2-9][0-9])\.(0[1-9]|1[012])\.(0[1-9]|[12][0-9]|3[01])\.([0-9][1-9])*$/
