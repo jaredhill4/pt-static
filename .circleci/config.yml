@@ -101,8 +101,7 @@ jobs:
             - build
 
   test:
-    docker:
-      - image: circleci/php:7.1-node-browsers
+    executor: default-executor
 
     steps:
       - checkout
@@ -126,8 +125,7 @@ jobs:
       SSH_HOST: web8.wlion.com
       REPOSITORY: git/pt-static
 
-    docker:
-      - image: circleci/php:7.1-node-browsers
+    executor: default-executor
 
     steps:
       - checkout
