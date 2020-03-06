@@ -1,7 +1,12 @@
 // @flow
 
 // Vendors
-import React, { useEffect, useState } from 'react';
+import React, {
+  type Element,
+  type Component,
+  useEffect,
+  useState
+} from 'react';
 import classnames from 'classnames';
 
 // Data
@@ -14,6 +19,7 @@ import './page.scss';
 type Props = {
   name: string,
   slug: string,
+  children: Element<any>,
   component: Function
 };
 
@@ -49,7 +55,7 @@ const Page = ({
   return (
     <div className={className}>
       {PageComponent ? (
-        <PageComponent pageData={pageData} {...props} />
+        <PageComponent {...props} pageData={pageData} />
       ) : (
         React.cloneElement(children, { ...props, pageData })
       )}
