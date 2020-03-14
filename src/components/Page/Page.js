@@ -2,6 +2,7 @@
 
 // Vendors
 import React, { type Element, useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import classnames from 'classnames';
 
 // Data
@@ -36,9 +37,6 @@ const Page = ({
     [`page--${pageData.className}`]: pageData.className
   });
 
-  // Set the document title
-  document.title = `${pageData.title || ''}`;
-
   // Reset the the document scroll position
   if (document.documentElement) document.documentElement.scrollTop = 0;
 
@@ -48,13 +46,19 @@ const Page = ({
   }
 
   return (
-    <div className={className}>
-      {PageComponent ? (
-        <PageComponent {...props} pageData={pageData} />
-      ) : (
-        React.cloneElement(children, { ...props, pageData })
-      )}
-    </div>
+    <>
+      <Helmet>
+        <title>{pageData.title}</title>
+      </Helmet>
+
+      <div className={className}>
+        {PageComponent ? (
+          <PageComponent {...props} pageData={pageData} />
+        ) : (
+          React.cloneElement(children, { ...props, pageData })
+        )}
+      </div>
+    </>
   );
 };
 
