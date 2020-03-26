@@ -3,13 +3,13 @@ import { lazy } from 'react';
 export default [
   {
     path: '/',
-    name: 'home',
+    data: 'pages.home',
     exact: true,
     component: lazy(() => import('../pages/Home/Home'))
   },
   {
     path: null,
-    name: 'notFound',
+    data: 'pages.notFound',
     component: lazy(() => import('../pages/NotFound/NotFound'))
   }
 ];

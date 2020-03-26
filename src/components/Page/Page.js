@@ -13,14 +13,14 @@ import './page.scss';
 
 // Types
 type Props = {
-  name: string,
+  data: string,
   slug: string,
   children: Element<any>,
   component: Function
 };
 
 const Page = ({
-  name,
+  data: model,
   component: PageComponent,
   children,
   ...props
@@ -29,9 +29,9 @@ const Page = ({
 
   useEffect(() => {
     // Get the page data
-    const data = getPageData(name);
+    const data = getPageData(model);
     if (data) setPageData(data);
-  }, [name]);
+  }, [model]);
 
   const className = classnames('page', {
     [`page--${pageData.className}`]: pageData.className
@@ -48,16 +48,17 @@ const Page = ({
   return (
     <>
       <Helmet>
+        <body className={className} />
         <title>{pageData.title}</title>
       </Helmet>
 
-      <div className={className}>
+      <main className="page__main">
         {PageComponent ? (
           <PageComponent {...props} pageData={pageData} />
         ) : (
           React.cloneElement(children, { ...props, pageData })
         )}
-      </div>
+      </main>
     </>
   );
 };
