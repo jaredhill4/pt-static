@@ -52,7 +52,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
    }
    ```
 
-   Note that we use dot notation for the `data` value to indicate in path to the file in the `data` directory where the data for this page will be stored:
+   Note that we use dot notation for the `data` value to indicate the path to the file in the `data` directory where the data for this page will be stored.
 
 2. Add the data file to `data/pages`.
 
