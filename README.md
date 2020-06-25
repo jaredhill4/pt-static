@@ -1,4 +1,13 @@
+# Project Template - Static
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Table of Contents
+
+1. [Available Scripts](#available-scripts)
+2. [Adding Pages](#adding-pages)
+3. [Server-side Rendering](#server-side-rendering)
+4. [Learn More](#learn-more)
 
 ## Available Scripts
 
@@ -73,6 +82,10 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
     content: 'Lorem ipsum dolor sit amet...'
    }
    ```
+
+## Server-side Rendering
+
+To enable server-side rendering in the project, you can use the [react-snap](https://github.com/stereobooster/react-snap) package. For more information about how to implement it, follow the documentation.
 
 ## Learn More
 
