@@ -64,7 +64,16 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 4. Build the page.
 
-   Now you can add all your content to the `data/pages/about.js` file, This data will then be passed to your `About` page component as a prop named `pageData`, just as you added it.
+   Now you can add all your content to the `data/pages/about.js` file, This data will then be passed to your `About` page component as a prop named `pageData`, just as you added it. At minimum, you will likely want to add a `title` and a `className` for the page. The rest of the fields are up to you.
+
+   ```javascript
+   {
+    title: 'About Us',
+    className: 'about',
+    content:
+     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+   }
+   ```
 
 ## Learn More
 
